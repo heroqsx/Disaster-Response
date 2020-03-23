@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report
 
 # nltk相关的库
@@ -79,21 +79,30 @@ def tokenize(text):
 
 def build_model():
     """
-    生成一个pipeline对象
+    生成一个模型
 
     INPUT:
         无
     OUTPUT:
-        pipeline对象
+        分类模型
     """
 
-    model = Pipeline([
+    pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
 
-    return model
+    # 网格搜索运算量非常大，暂时只挑部分参数尝试一下
+    parameters = {
+        'vect__min_df': [1, 5],
+        'tfidf__use_idf': [True, False],
+        'clf__estimator__n_estimators': [10, 25]
+    }
+
+    cv = GridSearchCV(pipeline, param_grid=parameters, verbose=10)
+
+    return cv
 
 
 def evaluate_model(model, X_test, y_test, category_names):

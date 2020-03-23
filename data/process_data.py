@@ -49,7 +49,9 @@ def clean_data(df):
         categories[column] = categories[column].str.slice(start=-1) # 单元格保留最后一个字符
         categories[column] = categories[column].astype("int32") # 转换成整型
 
-    
+    # 经过查看，发现related列有异常值2，定位出来后统一更新为1
+    categories["related"].replace(2, 1, inplace=True)
+
     # 生成36个category列，并去除重复行
     del df["categories"]
     df = pd.concat([df, categories], axis=1)

@@ -8,7 +8,7 @@ from nltk import pos_tag
 
 from flask import Flask
 from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Pie
 # from sklearn.externals import joblib # 用pickle保存的，为什么不用pickle加载？
 import pickle
 from sqlalchemy import create_engine
@@ -110,6 +110,18 @@ def index():
         },
         {
             'data': [
+                Pie(
+                    labels=genre_names,
+                    values=genre_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Pct. of Message Genres'
+            }
+        },
+        {
+            'data': [
                 Bar(
                     x=category_names,
                     y=category_counts
@@ -126,7 +138,6 @@ def index():
                 }
             }
         }
-
     ]
     
     # encode plotly graphs in JSON
